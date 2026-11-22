@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Study Together｜线上自习室</title>
+<style>
+:root{--blue:#3478f6;--blue2:#eaf2ff;--ink:#17243b;--muted:#748198;--line:#e8edf5;--bg:#f5f8fd;--green:#12b886}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,"Microsoft YaHei",system-ui,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:10px 15px;background:var(--blue);color:white;font-weight:650}button.secondary{background:#edf3ff;color:#2865d9}button.ghost{background:transparent;color:var(--muted)}button:disabled{opacity:.45;cursor:not-allowed}
+.topbar{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100% - 1280px)/2));position:sticky;top:0;z-index:5}
+.brand{display:flex;gap:11px;align-items:center;font-weight:800;font-size:18px}.logo{display:grid;place-items:center;width:40px;height:40px;background:var(--blue2);border-radius:13px;font-size:22px}
+nav{display:flex;gap:8px}nav button{background:transparent;color:#65728a;font-weight:600}nav button.active{background:var(--blue2);color:var(--blue)}
+.wrap{max-width:1280px;margin:26px auto;padding:0 20px}.hero{border-radius:22px;padding:32px;color:#fff;background:linear-gradient(110deg,#122744ed,#204d82c9),radial-gradient(circle at 80% 20%,#6da6ff,transparent 40%);display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:205px;box-shadow:0 12px 35px #1b47731a}.hero h1{font-size:clamp(27px,4vw,42px);margin:0 0 10px}.hero p{color:#dbe8ff;margin:0 0 22px}.hero .stats{display:flex;gap:22px;flex-wrap:wrap}.hero .stats span{font-size:13px;color:#dbe8ff}.hero .stats b{display:block;font-size:20px;color:white}.hero-icon{font-size:82px;opacity:.9;margin:0 4vw}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-top:20px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 5px 20px #203d6506}.card h2{font-size:19px;margin:0 0 5px}.sub{color:var(--muted);font-size:13px;margin:0 0 18px}.room-filters{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0}.chip{background:#f1f5fb;color:#6d7890;padding:7px 12px;border-radius:20px;font-size:13px}.chip.active{background:var(--blue);color:white}
+.rooms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.room{border:1px solid var(--line);border-radius:15px;padding:16px;transition:.15s}.room:hover{border-color:#b8d0ff;transform:translateY(-1px)}.room-top{display:flex;align-items:center;gap:12px}.room-icon{width:43px;height:43px;border-radius:13px;background:var(--blue2);display:grid;place-items:center;font-size:22px}.room h3{margin:0;font-size:15px}.room small{color:var(--muted)}.room p{font-size:13px;color:#67748a;min-height:38px;margin:12px 0}.room-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}.room-foot button{font-size:12px;padding:8px 11px}
+.focus-panel{background:linear-gradient(150deg,#142e50,#1e4774);color:white;border-radius:18px;padding:22px;position:relative;overflow:hidden}.focus-panel:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;border:1px solid #ffffff1a;right:-50px;top:-60px}.focus-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.focus-head small{color:#c7d9f5}.timer{text-align:center;padding:20px 0 16px}.timer-label{font-size:13px;color:#b7ccef}.time{font-size:56px;letter-spacing:2px;font-weight:750;margin:5px 0}.timer-actions{display:flex;justify-content:center;gap:9px}.focus-panel button.secondary{background:#ffffff1c;color:#fff}.focus-panel .tiny{font-size:12px;color:#c7d9f5;margin-top:18px;display:flex;justify-content:space-between}
+.task-row{display:flex;align-items:flex-start;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.task-row:last-child{border-bottom:0}.task-row input[type=checkbox]{accent-color:var(--blue);width:17px;height:17px;margin-top:4px}.task-content{flex:1}.task-content.done .task-name{text-decoration:line-through;color:#9aa5b7}.task-name{font-weight:650}.task-meta{font-size:12px;color:var(--muted);margin-top:3px}.task-add{display:flex;gap:8px;margin-top:15px}.task-add input,.task-add select,.create-row input,.create-row select{min-width:0;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:white;color:var(--ink)}.task-add button{white-space:nowrap}
+.progress{height:7px;background:#edf1f7;border-radius:10px;overflow:hidden;margin-top:14px}.progress div{height:100%;background:var(--green);width:0;transition:.2s}
+.room-live{display:none;margin-top:20px}.room-live.show{display:block}.live-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}.people{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.person{background:#f8faff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center}.avatar{width:35px;height:35px;border-radius:50%;background:#dce9ff;display:grid;place-items:center;font-size:18px}.person small{display:block;color:var(--muted)}.status{font-size:11px;color:#0d9b70;background:#e1f8ef;padding:3px 7px;border-radius:10px;margin-left:auto}.board textarea{width:100%;min-height:75px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px}.messages{margin-top:12px;display:grid;gap:8px}.message{background:#f7f9fd;border-radius:12px;padding:10px 12px;font-size:13px}.message small{color:var(--muted);display:block;margin-bottom:3px}.create-row{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:9px;margin-top:14px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:#f7faff;border-radius:13px;padding:14px}.metric b{font-size:24px;display:block}.metric span{font-size:12px;color:var(--muted)}.sound-options{display:flex;gap:8px;flex-wrap:wrap}.sound-options button{background:#f1f5fb;color:#64738b}.sound-options button.active{background:var(--blue2);color:var(--blue)}footer{text-align:center;color:#98a3b5;font-size:12px;padding:28px 15px}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#182a45;color:white;padding:11px 18px;border-radius:12px;box-shadow:0 8px 30px #0002;z-index:10;display:none}
+@media(max-width:850px){.grid,.live-grid{grid-template-columns:1fr}.hero-icon{display:none}.rooms{grid-template-columns:1fr 1fr}.create-row{grid-template-columns:1fr 1fr}.topbar{padding:0 14px}nav{gap:0}nav button{padding:8px;font-size:12px}.brand span:last-child{display:none}}
+@media(max-width:540px){.rooms{grid-template-columns:1fr}.wrap{padding:0 12px;margin-top:14px}.hero{padding:24px}.card{padding:16px}.time{font-size:48px}.create-row{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.people{grid-template-columns:1fr}.topbar{height:auto;min-height:64px;flex-wrap:wrap;gap:6px;padding:10px 12px}nav{width:100%;justify-content:space-between}}
+
+.memo-item{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fbfcff}
+.memo-item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.memo-item h3{margin:0;font-size:15px}.memo-tag{font-size:11px;color:#2865d9;background:#eaf2ff;border-radius:9px;padding:4px 7px;white-space:nowrap}
+.memo-body{white-space:pre-wrap;overflow-wrap:anywhere;color:#56647a;font-size:13px;margin-top:9px}
+.memo-meta{font-size:11px;color:#9aa5b7;margin-top:10px}
+.wheel-disc{cursor:pointer}
+.time{cursor:pointer}
+.room-live.show{position:fixed;inset:0;z-index:30;overflow-y:auto;margin:0;padding:24px;background:var(--bg)}
+#roomLive>.focus-panel{width:min(1280px,100%);margin:0 auto 18px}
+@media(max-width:540px){.room-live.show{padding:12px}}
+
+
+</style>
+<style>
+.community-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:18px;margin-top:20px}.community-post{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}.community-post h3{margin:0 0 5px;font-size:15px}.community-post p{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere;color:#56647a;font-size:13px}.community-tag{font-size:11px;border-radius:20px;padding:4px 8px;background:#eaf2ff;color:#2865d9}.community-answer{border-top:1px solid var(--line);padding:10px 0 0;margin-top:10px;font-size:12px}.leader-list{display:grid;gap:7px}.leader-row{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:10px;background:#f7f9fd;font-size:13px}.leader-row b{color:#c48619}.community-form{display:grid;grid-template-columns:150px 1fr auto;gap:8px;margin:14px 0}.community-form input,.community-form select,.community-form textarea{min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px}.community-form textarea{grid-column:1/-1;min-height:75px;resize:vertical}.wheel-wrap{width:min(330px,80vw);aspect-ratio:1;margin:20px auto;position:relative;padding-top:8px}.wheel-pointer{position:absolute;z-index:2;left:50%;top:-1px;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid #203d65;filter:drop-shadow(0 2px 2px #0002)}.wheel-disc{width:100%;height:100%;border-radius:50%;border:8px solid #fff;box-shadow:0 5px 22px #203d6522;position:relative;transition:transform 4.5s cubic-bezier(.12,.72,.12,1);background:conic-gradient(#eaf2ff 0deg 45deg,#f7ecd8 45deg 90deg,#e6f7ef 90deg 135deg,#f9e8e8 135deg 180deg,#e8effa 180deg 225deg,#fff2d8 225deg 270deg,#e9e7ff 270deg 315deg,#e1f4f2 315deg 360deg)}.wheel-label{position:absolute;width:76px;text-align:center;font-size:12px;font-weight:700;color:#263852;transform:translate(-50%,-50%);line-height:1.25}.wheel-center{position:absolute;left:50%;top:50%;width:68px;height:68px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);display:grid;place-items:center;color:var(--blue);font-weight:800;box-shadow:0 2px 8px #18365a22}.entry-backdrop{position:fixed;inset:0;background:#13243dcc;z-index:21;display:none;place-items:center;padding:18px}.entry-card{width:min(540px,100%);max-height:92vh;overflow:auto}.plan-item{padding:9px 11px;border-radius:10px;background:#f5f8fd;margin-top:7px;font-size:13px}.plan-item.break{background:#e9f8f0}
+@media(max-width:850px){.community-grid{grid-template-columns:1fr}.community-form{grid-template-columns:1fr}.community-form textarea{grid-column:auto}}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<header class="topbar">
+ <div class="brand"><div class="logo">📘</div><span>Study Together<small style="display:block;font-size:10px;color:#8491a6;font-weight:500">线上自习室</small></span></div>
+ <nav><button class="active" data-scroll="home">首页</button><button data-scroll="rooms-section">自习房间</button><button data-scroll="tasks-section">我的任务</button><button data-scroll="stats-section">专注统计</button><button data-scroll="community-section">社区</button><button data-scroll="meal-section">餐食转盘</button></nav>
+ <div style="display:flex;gap:8px;align-items:center"><button class="secondary" id="modeToggle">🌐 联机模式</button><button class="secondary" id="profileBtn">🙂 账号</button></div>
+</header>
+<main class="wrap" id="home">
+ <section class="hero">
+  <div><h1>一起学习，让专注成为习惯。</h1><p>不同的目标，同一个自习室。今天也和大家一起进步吧。</p><div class="stats"><span><b id="heroRooms">5</b>个主题房间</span><span><b id="heroPeople">0</b>人在线</span><span><b id="heroMinutes">25</b>分钟一轮</span></div></div><div class="hero-icon">☕📚</div>
+ </section>
+ <div class="grid">
+  <section class="card" id="rooms-section"><h2>发现自习房间</h2><p class="sub">选择今天的目标，加入同频的学习伙伴。</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+    <input id="roomSearchCode" placeholder="输入房间号搜索好友的房间" style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px 12px">
+    <button id="searchRoomCode">搜索房间</button>
+   </div>
+   <div class="room-filters" id="filters"></div><div class="rooms" id="rooms"></div>
+   <h3 style="font-size:15px;margin:24px 0 0">创建自己的房间</h3><div class="create-row"><input id="newRoomName" placeholder="房间名称，例如：高数期末刷题"><select id="newRoomType"><option>期末复习房</option><option>考研房</option><option>四六级房</option><option>编程刷题房</option><option>安静读书房</option></select><select id="newRoomClose"><option value="22:30">22:30 关闭</option><option value="23:00">23:00 关闭</option><option value="23:30">23:30 关闭</option><option value="none">不定时关闭</option></select><button id="createRoom">＋ 创建</button></div>
+  </section>
+  <section class="card"><h2>今日专注</h2><p class="sub">不用摄像头，安静地和大家一起学习。</p>
+   <div class="focus-panel"><div class="focus-head"><div><b id="activeRoomTitle">自由专注</b><br><small id="activeRoomSub">35 分钟专注 · 5 分钟休息</small></div><small id="roomCloseLabel">今日 22:30 关闭</small></div><div class="timer"><div id="durationEditor" style="display:none;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px"><label for="focusDurationInput" style="font-size:13px;color:#dbe8ff">专注时长</label><input id="focusDurationInput" type="number" min="25" max="60" step="1" value="35" style="width:76px;border:1px solid #ffffff55;border-radius:8px;padding:6px 8px;background:#ffffff12;color:white"><span style="font-size:13px;color:#dbe8ff">分钟</span><label for="restDurationInput" style="font-size:13px;color:#dbe8ff">休息</label><input id="restDurationInput" type="number" min="1" max="30" step="1" value="5" style="width:68px;border:1px solid #ffffff55;border-radius:8px;padding:6px 8px;background:#ffffff12;color:white"><span style="font-size:13px;color:#dbe8ff">分钟</span><button class="secondary" id="applyFocusDuration" style="padding:7px 10px">应用</button></div><div class="timer-label" id="timerLabel">🍅 专注时间</div><div class="time" id="timeDisplay" role="button" tabindex="0" title="点击修改专注与休息时长" aria-label="点击修改专注与休息时长">35:00</div><div class="timer-actions"><button id="startPause">▶ 开始专注</button><button class="secondary" id="skipBreak">跳过专注休息</button><button class="secondary" id="resetTimer">重置</button></div></div><div class="tiny"><span>🔒 纯文字 · 无摄像头</span><span id="cycleLabel">第 1 轮</span></div></div>
+   <h3 style="font-size:15px;margin:22px 0 12px">内置白噪音</h3><div class="sound-options"><button data-sound="rain">🌧 雨声</button><button data-sound="cafe">☕ 咖啡馆</button><button data-sound="library">📚 图书馆</button><button data-sound="lofi">🎹 轻音乐</button><button data-sound="forest">🌲 森林</button><button data-sound="off" class="active">静音</button></div><p class="sub" style="margin:10px 0 0">白噪音由浏览器本地生成，不上传音频；首次播放需要点击按钮。</p>
+  </section>
+ </div>
+ <section class="room-live" id="roomLive">
+  <div class="live-grid">
+   <div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><h2 id="liveTitle">房间看板</h2><p class="sub" id="liveSubtitle">大家正在一起专注</p></div><button class="secondary" id="leaveRoom">离开房间</button></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px"><span class="chip">房间号：<b id="currentRoomCode">—</b></span><button class="secondary" id="copyRoomCode">复制房间号</button><span style="font-size:12px;color:var(--muted)">分享房间号，邀请好友加入</span></div>
+   <div class="metrics"><div class="metric"><b id="liveCount">4</b><span>当前在线</span></div><div class="metric"><b id="myFocus">0m</b><span>本次专注</span></div><div class="metric"><b id="closeCountdown">—</b><span>闭馆时间</span></div></div><div id="roomPlanCard" style="display:none;background:#f4f8ff;border:1px solid #dce8fb;border-radius:13px;padding:13px;margin:12px 0"><b>本次目标时间表</b><div id="roomPlanText" style="margin-top:7px"></div></div><h3 style="font-size:15px;margin:22px 0 12px">在线自习伙伴</h3><div class="people" id="people"></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
+    <button class="secondary" id="cheerRoom">👏 给大家加油</button>
+    <button class="secondary" id="statusStudy">📚 学习中</button>
+    <button class="secondary" id="statusBreak">☕ 休息中</button>
+   </div></div>
+   <div class="card board"><h2>学习留言板</h2><p class="sub">只分享学习目标、进度和问题；请保持安静友好。</p><textarea id="messageInput" placeholder="例如：今天准备完成阅读专项两篇……"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:9px"><small style="color:var(--muted)">请勿发布闲聊或个人敏感信息</small><button id="sendMessage">发布留言</button></div><div class="messages" id="messages"></div></div>
+  </div>
+ </section>
+ <div class="grid">
+  <section class="card" id="tasks-section"><h2>我的今日任务</h2><p class="sub">完成目标后打卡，给今天一个小小的交代。</p><div id="tasks"></div><div class="task-add"><input id="taskInput" placeholder="添加任务，例如：背 80 个单词"><button id="addTask">＋ 添加</button></div><div class="progress"><div id="taskProgress"></div></div><p class="sub" id="taskProgressText" style="margin:8px 0 0">已完成 0 / 0 项</p><button style="margin-top:15px;width:100%" id="checkin">✓ 提交今日学习打卡</button></section>
+  <section class="card" id="stats-section"><h2>专注统计</h2><p class="sub">本设备保存的学习记录 · 每日打卡情况</p><div class="metrics"><div class="metric"><b id="todayFocus">0m</b><span>今日专注</span></div><div class="metric"><b id="totalSessions">0</b><span>完成番茄钟</span></div><div class="metric"><b id="streak">0</b><span>连续打卡天数</span></div></div><div style="margin-top:20px"><div style="display:flex;justify-content:space-between"><b style="font-size:14px">今日目标完成度</b><span id="goalPercent" style="color:var(--blue)">0%</span></div><div class="progress"><div id="goalProgress"></div></div></div><h3 style="font-size:15px;margin:22px 0 10px">最近学习记录</h3><div id="history" style="font-size:13px;color:var(--muted)">开始一轮专注，记录就会显示在这里。</div></section>
+ </div>
+</main>
+
+ <section class="card" id="memo-section" style="margin-top:20px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+   <div><h2>学习备忘录</h2><p class="sub" style="margin-bottom:0">记录灵感、待复习知识点、错题线索和明日计划。内容保存在当前浏览器。</p></div>
+   <button id="newMemo">＋ 新建备忘录</button>
+  </div>
+  <div class="create-row" style="grid-template-columns:1fr 160px auto;margin-top:16px">
+   <input id="memoTitle" placeholder="标题，例如：高数第三章易错点">
+   <select id="memoTag"><option>复习笔记</option><option>错题整理</option><option>明日计划</option><option>灵感记录</option></select>
+   <button id="saveMemo">保存备忘录</button>
+  </div>
+  <textarea id="memoBody" placeholder="写下要记住的内容……" style="width:100%;min-height:105px;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;resize:vertical"></textarea>
+  <div id="memoList" style="display:grid;gap:10px;margin-top:16px"></div>
+ </section>
+
+
+
+
+<section class="community-grid" id="community-section">
+ <div class="card"><h2>自习社区</h2><p class="sub">发布目标、找自习搭子，也可以向大家提问。</p>
+  <div class="community-form"><select id="communityType"><option value="buddy">找自习搭子</option><option value="goal">发布学习目标</option><option value="question">提问求助</option></select><input id="communityTitle" maxlength="80" placeholder="标题，例如：今晚一起背六级词汇"><textarea id="communityBody" maxlength="700" placeholder="写清楚你的目标、时间安排或问题"></textarea><button id="communitySubmit">发布</button></div>
+  <div id="communityFeed" style="display:grid;gap:10px"></div>
+ </div>
+ <div style="display:grid;gap:18px;align-content:start"><section class="card"><h2>自习时长 Top 10</h2><p class="sub">按账号累计专注时间排名</p><div class="leader-list" id="studyLeaders"></div></section><section class="card"><h2>答疑贡献 Top 10</h2><p class="sub">按社区回答数排名</p><div class="leader-list" id="helpLeaders"></div></section></div>
+</section>
+<section class="card" id="meal-section" style="margin-top:20px;text-align:center"><h2>自习结束，正餐吃什么？</h2><p class="sub">点击转盘或按钮开始抽选，也可以换一组正餐种类。</p><div class="wheel-wrap"><div class="wheel-pointer"></div><div class="wheel-disc" id="mealWheel" role="button" tabindex="0" aria-label="点击转动正餐转盘" title="点击转动转盘"><div class="wheel-center">开饭</div></div></div><div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><button id="spinMeal">🎯 转一下</button><button id="refreshMeal" class="secondary">🔄 换一组菜品</button></div><div id="mealResult" style="font-size:19px;font-weight:800;color:#2865d9;margin-top:12px;min-height:30px"></div></section>
+<div class="entry-backdrop" id="roomEntryGate"><div class="card entry-card"><h2 id="entryRoomTitle">进入自习室</h2><p class="sub">写下本轮目标和可用时间，AI 会拆分任务并安排学习与休息节奏。</p><label style="font-size:13px;font-weight:650">本轮学习目标</label><textarea id="entryGoal" maxlength="240" placeholder="例如：完成高数第三章 20 道题并整理错题" style="display:block;width:100%;min-height:84px;margin:6px 0 12px;border:1px solid var(--line);border-radius:10px;padding:11px;resize:vertical"></textarea><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label for="entryMinutes">可用时间</label><select id="entryMinutes" style="border:1px solid var(--line);border-radius:10px;padding:9px"><option value="25">25 分钟</option><option value="30">30 分钟</option><option value="35" selected>35 分钟</option><option value="60">60 分钟</option><option value="90">90 分钟</option><option value="120">2 小时</option><option value="180">3 小时</option><option value="240">4 小时</option></select><button id="makePlan">AI 帮我拆解并排时间表</button><button class="ghost" id="cancelRoomEntry">取消</button></div><small id="planSourceHint" style="display:block;color:var(--muted);margin-top:9px">已配置 AI 服务时会识别目标、拆分任务并安排节奏；否则使用本地计划。</small><div id="entryPlan" style="display:none;margin-top:14px"></div><button id="confirmRoomEntry" style="display:none;margin-top:14px">进入房间开始学习</button></div></div>
+
+
+<div id="accountGate" style="position:fixed;inset:0;background:#13243dcc;z-index:20;display:none;place-items:center;padding:20px"><div class="card" style="width:min(430px,100%);padding:26px"><h2>创建学习账号</h2><p class="sub">账号用于联机互动和跨设备排行榜。可以先跳过；离线记录会暂存在本设备，之后登录可统一补记。</p><label style="font-size:13px">昵称</label><input id="accountName" maxlength="20" placeholder="输入一个不重复的昵称" style="display:block;width:100%;margin:6px 0 12px;border:1px solid var(--line);border-radius:10px;padding:11px"><input id="accountPassword" type="password" maxlength="128" placeholder="设置密码（至少 8 位）" style="display:block;width:100%;margin:6px 0 12px;border:1px solid var(--line);border-radius:10px;padding:11px"><button id="createAccount">创建账号</button><div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px"><b>已有账号？</b><div style="display:flex;gap:8px;margin-top:8px"><input id="accountIdInput" placeholder="输入账号 ID" style="min-width:0;flex:1;border:1px solid var(--line);border-radius:10px;padding:10px"><input id="loginPassword" type="password" placeholder="密码" style="min-width:0;flex:1;border:1px solid var(--line);border-radius:10px;padding:10px"><button class="secondary" id="loginAccount">登录</button></div></div><button class="ghost" id="skipAccount" style="margin-top:12px">先不注册，继续使用</button><div id="accountError" style="color:#c0392b;font-size:13px;margin-top:10px"></div></div></div>
+<footer>Study Together · 让每一次专注都有回响。<br>账号与在线房间由配套服务器提供；个人任务保存在当前浏览器。</footer><div class="toast" id="toast"></div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const defaults=[
+ {id:1,name:"六级阅读专项自习",type:"四六级房",icon:"📖",desc:"专注阅读理解与长难句，安静刷题。",people:64,close:"22:30"},
+ {id:2,name:"考研数学刷题室",type:"考研房",icon:"🎓",desc:"每日一题，保持手感，一起上岸。",people:38,close:"23:00"},
+ {id:3,name:"高数期末冲刺",type:"期末复习房",icon:"🧮",desc:"定理复习、例题演算、错题回顾。",people:21,close:"22:30"},
+ {id:4,name:"Java 编程刷题",type:"编程刷题房",icon:"💻",desc:"算法、数据结构与每日代码练习。",people:17,close:"23:30"},
+ {id:5,name:"安静摸鱼读书房",type:"安静读书房",icon:"🌿",desc:"读书、整理笔记、慢下来也很好。",people:12,close:"none"}];
+const cats=["全部",...new Set(defaults.map(x=>x.type))];let rooms=JSON.parse(localStorage.getItem("st_rooms")||"null")||defaults;let focusDuration=Math.min(60,Math.max(25,Number(localStorage.getItem('st_focus_duration'))||35)),restDuration=Math.min(30,Math.max(1,Number(localStorage.getItem('st_rest_duration'))||5));let roundDurationSeconds=focusDuration*60,roundRestDurationSeconds=restDuration*60,roomFocusSeconds=0;let filter="全部",currentRoom=null,mode="focus",remaining=focusDuration*60,timer=null,running=false,cycle=1,focusSeconds=0,sessionSeconds=0,sound="off",audioCtx=null,noiseNode=null,gainNode=null;
+let myDisplayName=localStorage.getItem("st_display_name")||"学习者";let myStatus="学习中";
+let tasks=JSON.parse(localStorage.getItem("st_tasks")||"null")||[{id:1,name:"背 80 个单词",done:false},{id:2,name:"完成两篇阅读",done:false},{id:3,name:"复盘 5 道错题",done:false}];
+let stats=JSON.parse(localStorage.getItem("st_stats")||"null")||{today:"",focusSeconds:0,sessions:0,checkins:[],history:[]};
+function save(){localStorage.setItem("st_rooms",JSON.stringify(rooms));localStorage.setItem("st_tasks",JSON.stringify(tasks));localStorage.setItem("st_stats",JSON.stringify(stats))}
+function toast(s){let e=document.getElementById("toast");e.textContent=s;e.style.display="block";setTimeout(()=>e.style.display="none",2400)}
+function day(){return new Date().toLocaleDateString("sv-SE")}
+function syncDay(){if(stats.today!==day()){stats.today=day();stats.focusSeconds=0;stats.sessions=0;}}
+function renderFilters(){document.getElementById("filters").innerHTML=cats.map(c=>`<button class="chip ${filter===c?"active":""}" data-filter="${c}">${c}</button>`).join("");document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;renderFilters();renderRooms()})}
+function renderRooms(){let list=rooms.filter(r=>filter==="全部"||r.type===filter);document.getElementById("rooms").innerHTML=list.map(r=>{const id=String(r.id),countText=socket&&socket.connected?(roomCountsReady?`👥 ${liveCounts[id]||0} 人在线`:'👥 正在同步人数…'):(appMode==='online'?'👥 正在连接…':'👥 联机后显示实时人数');return `<article class="room"><div class="room-top"><div class="room-icon">${r.icon||"📚"}</div><div><h3>${esc(r.name)}</h3><small>${esc(r.type)} · ${r.close==="none"?"自由开放":r.close+" 闭馆"}</small></div></div><p>${esc(r.desc||"和大家一起完成今天的学习目标。")}</p><div class="room-foot"><span>${countText}</span><button onclick="joinRoom(${r.id})">进入房间 →</button></div></article>`}).join("")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function joinRoom(id){currentRoom=rooms.find(r=>r.id===id);roomFocusSeconds=loadRoomFocusSeconds(currentRoom.id);document.getElementById("activeRoomTitle").textContent=currentRoom.name;document.getElementById("activeRoomSub").textContent=currentRoom.type+" · "+focusDuration+" 分钟专注 / "+restDuration+" 分钟休息";document.getElementById("roomCloseLabel").textContent=currentRoom.close==="none"?"自由开放":"闭馆 "+currentRoom.close;document.getElementById("roomLive").classList.add("show");document.getElementById("liveTitle").textContent=currentRoom.name;document.getElementById("liveSubtitle").textContent=currentRoom.type+" · 纯文字自习房";document.getElementById("liveCount").textContent=socket&&socket.connected&&roomCountsReady?(liveCounts[String(currentRoom.id)]||0):"—";document.getElementById("closeCountdown").textContent=currentRoom.close==="none"?"不限时":currentRoom.close;renderPeople();document.getElementById("messages").innerHTML="";document.getElementById("roomLive").scrollIntoView({behavior:"smooth",block:"start"});if(!running)startTimer();toast("已进入「"+currentRoom.name+"」");}
+function formatStudyElapsed(seconds){seconds=Math.max(0,Math.floor(Number(seconds)||0));const minutes=Math.floor(seconds/60);return minutes>=60?Math.floor(minutes/60)+"h "+minutes%60+"m":minutes?minutes+"m "+seconds%60+"s":seconds?seconds+"s":"0m"}function roomFocusKey(roomId){return'st_room_focus_'+String(roomId)}function loadRoomFocusSeconds(roomId){return Math.max(0,Number(localStorage.getItem(roomFocusKey(roomId)))||0)}
+function renderPeople(){let names=[["🙂","你","学习中",formatStudyElapsed(roomFocusSeconds)],["👩🏻","Lily","学习中","42m"],["🧑🏻","阿泽","休息","25m"],["👨🏽","Momo","学习中","1h 12m"]];document.getElementById("people").innerHTML=names.map(p=>`<div class="person"><div class="avatar">${p[0]}</div><div><b>${p[1]}</b><small>${p[3]} 专注</small></div><span class="status" style="${p[2]==="休息"?"background:#fff0d9;color:#b7791f":""}">${p[2]}</span></div>`).join("")}
+document.getElementById("createRoom").onclick=()=>{let name=document.getElementById("newRoomName").value.trim();if(!name)return toast("先给房间起个名字吧");let type=document.getElementById("newRoomType").value,close=document.getElementById("newRoomClose").value;rooms.unshift({id:Date.now(),name,type,icon:({"期末复习房":"🧮","考研房":"🎓","四六级房":"📖","编程刷题房":"💻","安静读书房":"🌿"})[type],desc:"由你创建的学习空间，欢迎目标一致的伙伴。",people:1,close});document.getElementById("newRoomName").value="";save();renderRooms();toast("房间创建成功")};
+function format(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function updateTimer(){document.getElementById("timeDisplay").textContent=format(remaining);document.getElementById("timerLabel").textContent=mode==="focus"?"🍅 专注时间":"☕ 休息时间";document.getElementById("startPause").textContent=running?"Ⅱ 暂停":"▶ "+(remaining===(mode==="focus"?roundDurationSeconds:roundRestDurationSeconds)?(mode==="focus"?"开始专注":"开始休息"):"继续");document.getElementById("cycleLabel").textContent="第 "+cycle+" 轮";document.getElementById("myFocus").textContent=formatStudyElapsed(roomFocusSeconds)}
+function tick(){if(remaining>0){remaining--;if(mode==="focus"){focusSeconds++;sessionSeconds++;stats.focusSeconds++;}updateTimer();renderStats();save();return}if(mode==="focus"){stats.sessions++;stats.history.unshift({date:new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"}),text:"完成第 "+cycle+" 轮专注（"+Math.round(roundDurationSeconds/60)+" 分钟）"});mode="break";roundRestDurationSeconds=restDuration*60;remaining=roundRestDurationSeconds;toast("专注完成！休息 "+restDuration+" 分钟吧 ☕");}else{mode="focus";roundDurationSeconds=focusDuration*60;remaining=roundDurationSeconds;cycle++;sessionSeconds=0;toast("休息结束，开始下一轮专注 🍅");}save();updateTimer();renderStats()}
+function startTimer(){if(!currentRoom){toast("进入自习室后才能开始计时");return}if(running)return;running=true;timer=setInterval(tick,1000);updateTimer()}
+function pauseTimer(){running=false;clearInterval(timer);timer=null;updateTimer()}
+document.getElementById("startPause").onclick=()=>running?pauseTimer():startTimer();
+document.getElementById("skipBreak").onclick=()=>{if(!currentRoom)return toast("进入自习室后才能开始计时");pauseTimer();mode="break";roundRestDurationSeconds=restDuration*60;remaining=roundRestDurationSeconds;updateTimer();startTimer()};
+document.getElementById("resetTimer").onclick=()=>{pauseTimer();mode="focus";roundDurationSeconds=focusDuration*60;remaining=roundDurationSeconds;sessionSeconds=0;updateTimer()};
+document.getElementById('focusDurationInput').value=focusDuration;document.getElementById('restDurationInput').value=restDuration;document.getElementById('heroMinutes').textContent=focusDuration;document.getElementById('activeRoomSub').textContent=focusDuration+' 分钟专注 · '+restDuration+' 分钟休息';document.getElementById('skipBreak').textContent='开始休息';
+const durationEditor=document.getElementById('durationEditor'),timeDisplay=document.getElementById('timeDisplay');function toggleDurationEditor(forceOpen){const open=forceOpen===undefined?durationEditor.style.display==='none':forceOpen;durationEditor.style.display=open?'flex':'none';if(open){const field=document.getElementById('focusDurationInput');field.focus();field.select();}}timeDisplay.onclick=()=>toggleDurationEditor();timeDisplay.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleDurationEditor();}};
+document.getElementById('applyFocusDuration').onclick=()=>{const input=document.getElementById('focusDurationInput'),restInput=document.getElementById('restDurationInput'),value=Math.round(Number(input.value)),restValue=Math.round(Number(restInput.value));if(!Number.isFinite(value)||value<25||value>60){toast('专注时长需设置为 25 到 60 分钟');input.value=focusDuration;return;}if(!Number.isFinite(restValue)||restValue<1||restValue>30){toast('休息时长需设置为 1 到 30 分钟');restInput.value=restDuration;return;}if(mode==='focus'){const elapsed=Math.max(0,roundDurationSeconds-remaining);roundDurationSeconds=value*60;remaining=Math.max(0,roundDurationSeconds-elapsed);}else{const elapsed=Math.max(0,roundRestDurationSeconds-remaining);roundRestDurationSeconds=restValue*60;remaining=Math.max(0,roundRestDurationSeconds-elapsed);}focusDuration=value;restDuration=restValue;localStorage.setItem('st_focus_duration',String(value));localStorage.setItem('st_rest_duration',String(restValue));document.getElementById('heroMinutes').textContent=value;document.getElementById('activeRoomSub').textContent=(currentRoom?currentRoom.type+' · ':'')+value+' 分钟专注 · '+restValue+' 分钟休息';updateTimer();toggleDurationEditor(false);toast('已设置为专注 '+value+' 分钟、休息 '+restValue+' 分钟');};
+const focusPanel=document.querySelector('.focus-panel'),focusHomeSlot=document.createElement('div');focusHomeSlot.id='focusPanelHomeSlot';focusPanel.before(focusHomeSlot);function moveFocusPanelIntoRoom(){const room=document.getElementById('roomLive');if(focusPanel.parentElement!==room)room.insertBefore(focusPanel,room.querySelector('.live-grid'));}function restoreFocusPanelHome(){if(focusPanel.parentElement!==focusHomeSlot.parentElement)focusHomeSlot.after(focusPanel);}function exitRoomView(){pauseTimer();restoreFocusPanelHome();document.getElementById('roomLive').classList.remove('show');currentRoom=null;}
+document.getElementById("leaveRoom").onclick=()=>{exitRoomView();toast("已离开房间，计时已暂停")};
+document.getElementById("sendMessage").onclick=()=>{let val=document.getElementById("messageInput").value.trim();if(!currentRoom)return toast("请先进入一个自习房间");if(val.length<2)return toast("留言内容再多一点吧");if(val.length>180)return toast("留言请控制在 180 字以内");let bad=["哈哈哈","在吗","吃了吗","打游戏","约吗","闲聊"];if(bad.some(w=>val.includes(w)))return toast("这里是学习留言板，请分享目标、进度或学习问题");let box=document.createElement("div");box.className="message";box.innerHTML="<small>🙂 你 · 刚刚</small>"+esc(val);document.getElementById("messages").prepend(box);document.getElementById("messageInput").value="";toast("留言已发布")};
+function renderTasks(){document.getElementById("tasks").innerHTML=tasks.map(t=>`<div class="task-row"><input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${t.id})"><div class="task-content ${t.done?"done":""}"><div class="task-name">${esc(t.name)}</div><div class="task-meta">${t.done?"✓ 已完成，做得好！":"今日目标 · 完成后勾选打卡"}</div></div><button class="ghost" onclick="deleteTask(${t.id})" aria-label="删除任务">×</button></div>`).join("");let done=tasks.filter(t=>t.done).length,p=tasks.length?Math.round(done/tasks.length*100):0;document.getElementById("taskProgress").style.width=p+"%";document.getElementById("taskProgressText").textContent=`已完成 ${done} / ${tasks.length} 项`;document.getElementById("goalPercent").textContent=p+"%";document.getElementById("goalProgress").style.width=p+"%"}
+function toggleTask(id){tasks=tasks.map(t=>t.id===id?{...t,done:!t.done}:t);save();renderTasks()}
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);save();renderTasks()}
+document.getElementById("addTask").onclick=()=>{let v=document.getElementById("taskInput").value.trim();if(!v)return toast("请输入一个学习目标");tasks.push({id:Date.now(),name:v,done:false});document.getElementById("taskInput").value="";save();renderTasks()};
+document.getElementById("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("addTask").click()});
+document.getElementById("checkin").onclick=()=>{syncDay();let done=tasks.filter(t=>t.done).length;if(!done)return toast("先完成至少一项学习任务再打卡吧");if(!stats.checkins.includes(day()))stats.checkins.push(day());stats.history.unshift({date:new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"}),text:`今日学习打卡：完成 ${done}/${tasks.length} 项任务`});save();renderStats();toast("今日打卡成功！继续保持 ✨")};
+function renderStats(){syncDay();let m=Math.floor(stats.focusSeconds/60);document.getElementById("todayFocus").textContent=m>=60?Math.floor(m/60)+"h "+m%60+"m":m+"m";document.getElementById("totalSessions").textContent=stats.sessions;document.getElementById("heroMinutes").textContent=focusDuration;document.getElementById("history").innerHTML=stats.history.length?stats.history.slice(0,5).map(h=>`<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b style="color:#52627b">${esc(h.date)}</b>　${esc(h.text)}</div>`).join(""):"开始一轮专注，记录就会显示在这里。";let streak=0,d=new Date();while(stats.checkins.includes(d.toLocaleDateString("sv-SE"))){streak++;d.setDate(d.getDate()-1)}document.getElementById("streak").textContent=streak}
+document.querySelectorAll("nav [data-scroll]").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.scroll).scrollIntoView({behavior:"smooth",block:"start"})});
+document.getElementById("profileBtn").onclick=()=>{if(myUser)toast("昵称："+myUser.name+" · ID："+myUser.id);else setAppMode('online');};
+function setSound(type){sound=type;document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===type));stopSound();if(type==="off")return;try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();gainNode=audioCtx.createGain();gainNode.gain.value=.035;gainNode.connect(audioCtx.destination);if(type==="rain"||type==="cafe"||type==="forest"||type==="lofi"){let buffer=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(type==="rain"?.6:.3);noiseNode=audioCtx.createBufferSource();noiseNode.buffer=buffer;noiseNode.loop=true;let filter=audioCtx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=type==="rain"?1200:(type==="forest"?900:(type==="lofi"?700:500));noiseNode.connect(filter);filter.connect(gainNode);noiseNode.start()}else{let osc=audioCtx.createOscillator();osc.type="sine";osc.frequency.value=type==="lofi"?220:(type==="library"?160:180);let g=audioCtx.createGain();g.gain.value=.12;osc.connect(g);g.connect(gainNode);osc.start();noiseNode=osc}toast("白噪音已开启，可在浏览器音量中调整")}catch(e){toast("当前浏览器暂不支持音频")}}
+function stopSound(){if(noiseNode){try{noiseNode.stop()}catch(e){}noiseNode=null}if(audioCtx){audioCtx.close();audioCtx=null}}
+document.querySelectorAll("[data-sound]").forEach(b=>b.onclick=()=>setSound(b.dataset.sound));
+
+// Local memo pad: persisted in this browser.
+let memos = JSON.parse(localStorage.getItem("st_memos") || "null") || [];
+let editingMemoId = null;
+function saveMemos(){localStorage.setItem("st_memos",JSON.stringify(memos));}
+function renderMemos(){
+ const box=document.getElementById("memoList");
+ if(!memos.length){box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">还没有备忘录。把今天的错题、知识点或明日计划记下来吧。</div>';return;}
+ box.innerHTML=memos.slice().sort((a,b)=>b.updated-a.updated).map(m=>`<article class="memo-item"><div class="memo-item-head"><div><h3>${esc(m.title||"未命名备忘录")}</h3><div class="memo-meta">${new Date(m.updated).toLocaleString("zh-CN")}</div></div><span class="memo-tag">${esc(m.tag)}</span></div><div class="memo-body">${esc(m.body)}</div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="secondary" onclick="editMemo(${m.id})">编辑</button><button class="ghost" onclick="deleteMemo(${m.id})">删除</button></div></article>`).join("");
+}
+function editMemo(id){const m=memos.find(x=>x.id===id);if(!m)return;editingMemoId=id;document.getElementById("memoTitle").value=m.title;document.getElementById("memoTag").value=m.tag;document.getElementById("memoBody").value=m.body;document.getElementById("saveMemo").textContent="更新备忘录";document.getElementById("memo-section").scrollIntoView({behavior:"smooth",block:"start"});}
+function deleteMemo(id){if(!confirm("确定删除这条备忘录吗？"))return;memos=memos.filter(x=>x.id!==id);saveMemos();renderMemos();if(editingMemoId===id)clearMemoForm();toast("备忘录已删除");}
+function clearMemoForm(){editingMemoId=null;document.getElementById("memoTitle").value="";document.getElementById("memoTag").selectedIndex=0;document.getElementById("memoBody").value="";document.getElementById("saveMemo").textContent="保存备忘录";}
+document.getElementById("saveMemo").onclick=()=>{const title=document.getElementById("memoTitle").value.trim(),body=document.getElementById("memoBody").value.trim(),tag=document.getElementById("memoTag").value;if(!title&&!body)return toast("请填写标题或备忘内容");const now=Date.now();if(editingMemoId){memos=memos.map(m=>m.id===editingMemoId?{...m,title:title||"未命名备忘录",body,tag,updated:now}:m);toast("备忘录已更新")}else{memos.push({id:now,title:title||"未命名备忘录",body,tag,updated:now});toast("备忘录已保存")}saveMemos();renderMemos();clearMemoForm();};
+document.getElementById("newMemo").onclick=()=>{clearMemoForm();document.getElementById("memoTitle").focus();};
+
+// Optional real-time collaboration. When served by the companion Node server,
+// room presence and room messages synchronize across connected browsers.
+let appMode=localStorage.getItem('st_mode')||'offline';
+let socket = (typeof io === "function") ? io({autoConnect:appMode==='online'}) : null;
+let liveCounts = {},roomCountsReady=false;
+if(socket){
+ socket.on("connect",()=>{liveCounts={};roomCountsReady=false;renderRooms();if(currentRoom)socket.emit("join_room",{roomId:String(currentRoom.id),roomName:currentRoom.name});});
+ socket.on("room_counts",data=>{liveCounts=Object.assign({},data||{});roomCountsReady=true;renderRooms();if(currentRoom)document.getElementById("liveCount").textContent=liveCounts[String(currentRoom.id)]||0;});
+ socket.on("room_count",data=>{liveCounts[String(data.roomId)]=Number(data.count)||0;roomCountsReady=true;renderRooms();if(currentRoom&&String(currentRoom.id)===String(data.roomId))document.getElementById("liveCount").textContent=liveCounts[String(data.roomId)];});
+ socket.on("disconnect",()=>{liveCounts={};roomCountsReady=false;renderRooms();if(currentRoom)document.getElementById("liveCount").textContent="—";});
+ socket.on("room_message",data=>{if(!currentRoom||String(data.roomId)!==String(currentRoom.id))return;const box=document.createElement("div");box.className="message";const sm=document.createElement("small");sm.textContent=(data.name||"学习伙伴")+" · "+(data.time||"刚刚");box.appendChild(sm);box.appendChild(document.createTextNode(data.text));document.getElementById("messages").prepend(box);});
+ const oldJoinRoom=joinRoom;
+ joinRoom=function(id){oldJoinRoom(id);if(socket.connected&&currentRoom)socket.emit("join_room",{roomId:String(currentRoom.id),roomName:currentRoom.name});};
+ document.getElementById("leaveRoom").onclick=()=>{if(currentRoom)socket.emit("leave_room",{roomId:String(currentRoom.id)});exitRoomView();toast("已离开房间，计时已暂停");};
+ document.getElementById("sendMessage").onclick=()=>{const val=document.getElementById("messageInput").value.trim();if(!currentRoom)return toast("请先进入一个自习房间");if(val.length<2)return toast("留言内容再多一点吧");if(val.length>180)return toast("留言请控制在 180 字以内");const bad=["哈哈哈","在吗","吃了吗","打游戏","约吗","闲聊"];if(bad.some(w=>val.includes(w)))return toast("请分享学习目标、进度或学习问题");if(socket.connected)socket.emit("room_message",{roomId:String(currentRoom.id),text:val,name:myDisplayName});else{const box=document.createElement("div");box.className="message";box.innerHTML="<small>🙂 你 · 刚刚</small>"+esc(val);document.getElementById("messages").prepend(box);}document.getElementById("messageInput").value="";};
+}
+
+
+// Room codes, live participant roster, friend-room lookup, and lightweight reactions.
+function roomCode(room){if(!room.code){room.code=String(room.id).slice(-6).padStart(6,"0");}return room.code;}
+rooms.forEach(roomCode);save();
+const oldJoinForCodes=joinRoom;
+joinRoom=function(id){
+ oldJoinForCodes(id);
+ if(currentRoom){
+  document.getElementById("currentRoomCode").textContent=roomCode(currentRoom);
+  if(socket&&socket.connected)socket.emit("join_room",{roomId:String(currentRoom.id),roomName:currentRoom.name,roomCode:roomCode(currentRoom),name:myDisplayName,status:myStatus});
+ }
+};
+document.getElementById("searchRoomCode").onclick=()=>{
+ const code=document.getElementById("roomSearchCode").value.trim();
+ const found=rooms.find(r=>roomCode(r)===code || String(r.id)===code);
+ if(!found){toast("没有找到这个房间号，请确认后重试");return;}
+ joinRoom(found.id);
+};
+document.getElementById("roomSearchCode").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("searchRoomCode").click()});
+document.getElementById("copyRoomCode").onclick=async()=>{
+ if(!currentRoom)return toast("请先进入一个自习室");
+ try{await navigator.clipboard.writeText(roomCode(currentRoom));toast("房间号已复制，可以分享给好友")}catch(e){toast("房间号："+roomCode(currentRoom))}
+};
+document.getElementById("cheerRoom").onclick=()=>{
+ if(!currentRoom)return toast("请先进入一个自习室");
+ if(socket&&socket.connected)socket.emit("room_reaction",{roomId:String(currentRoom.id),name:myDisplayName,text:"👏 给大家加油！"});
+ else toast("加油！启动实时服务器后，房间伙伴都能收到");
+};
+function setMyStatus(status){
+ myStatus=status;
+ if(socket&&socket.connected&&currentRoom)socket.emit("update_status",{roomId:String(currentRoom.id),name:myDisplayName,status});
+ toast("状态已更新："+status);
+}
+document.getElementById("statusStudy").onclick=()=>setMyStatus("学习中");
+document.getElementById("statusBreak").onclick=()=>setMyStatus("休息中");
+if(socket){
+ socket.on("room_members",data=>{
+  if(!currentRoom||String(data.roomId)!==String(currentRoom.id))return;
+  document.getElementById("liveCount").textContent=(data.members||[]).length;
+  document.getElementById("people").innerHTML=(data.members||[]).map((p,i)=>`<div class="person"><div class="avatar">${esc(p.avatar||["🙂","👩🏻","🧑🏻","👨🏽"][i%4])}</div><div><b>${esc(p.name||"学习伙伴")}</b><small>${formatStudyElapsed(p.focusSeconds)} 专注</small></div><span class="status" style="${p.status==="休息中"?"background:#fff0d9;color:#b7791f":""}">${esc(p.status||"学习中")}</span></div>`).join("")||"暂无在线成员";
+ });
+ socket.on("room_reaction",data=>{if(!currentRoom||String(data.roomId)!==String(currentRoom.id))return;const box=document.createElement("div");box.className="message";box.textContent=(data.name||"学习伙伴")+"："+data.text;document.getElementById("messages").prepend(box);});
+}
+
+
+
+// Account-required realtime community features.
+let myUser=null, onlineUsers=[];
+const gate=document.getElementById('accountGate');
+const accountError=document.getElementById('accountError');
+function updateProfile(){if(!myUser)return;myDisplayName=myUser.name;document.getElementById('profileBtn').textContent='🙂 '+myUser.name;}
+function gateError(message){accountError.textContent=message||'';}
+function authenticate(){const saved=localStorage.getItem('st_user_id');if(saved&&socket&&socket.connected)socket.emit('authenticate',{id:saved,password:sessionStorage.getItem('st_session_password')||''});}
+if(socket){
+ socket.on('connect',authenticate);
+ socket.on('auth_error',d=>{localStorage.removeItem('st_user_id');sessionStorage.removeItem('st_session_password');gateError(d.message||'账号验证失败，请重新创建或登录');gate.style.display='grid';});
+ socket.on('user_ready',u=>{myUser=u;localStorage.setItem('st_user_id',u.id);gate.style.display='none';gateError('');updateProfile();const pending=Number(localStorage.getItem('st_pending_focus_seconds')||0);if(pending>0)socket.emit('focus_time_batch',{seconds:pending});});
+ socket.on('name_updated',u=>{myUser=u;updateProfile();toast('昵称已更新');});
+ socket.on('user_created',u=>{myUser=u;localStorage.setItem('st_user_id',u.id);gate.style.display='none';updateProfile();alert('账号创建成功！你的唯一 ID：'+u.id+'，请保存好。');});
+ socket.on('account_error',d=>gateError(d.message||'无法创建账号'));
+ socket.on('online_users',list=>{onlineUsers=list||[];document.getElementById('heroPeople').textContent=onlineUsers.length;});
+ socket.on('room_catalog',list=>{if(!Array.isArray(list))return;rooms=[...defaults.filter(d=>!list.some(x=>String(x.id)===String(d.id))),...list];renderRooms();document.getElementById('heroRooms').textContent=rooms.length;});
+ socket.on('friend_result',d=>{const out=document.getElementById('friendResult');out.textContent=d.user?'找到：'+d.user.name+'（ID '+d.user.id+'）'+(d.user.online?' · 在线':' · 离线'):'没有找到该 ID 或昵称';if(d.user)out.dataset.uid=d.user.id;});
+ socket.on('invite_received',d=>{if(confirm((d.fromName||'好友')+' 邀请你进入「'+d.roomName+'」，现在进入吗？'))joinRoom(d.roomId);});
+ socket.on('focus_time_batch_saved',d=>{const pending=Number(localStorage.getItem('st_pending_focus_seconds')||0),sent=Number(d.seconds)||0;localStorage.setItem('st_pending_focus_seconds',String(Math.max(0,pending-sent)));if(sent)toast('已将离线期间 '+Math.floor(sent/60)+' 分钟专注补记到账号');});
+}
+document.getElementById('createAccount').onclick=()=>{const name=document.getElementById('accountName').value.trim();if(!name)return gateError('请先输入昵称');if(!socket||!socket.connected)return gateError('实时服务器未连接，请稍后重试');const password=document.getElementById('accountPassword').value;if(password.length<8)return gateError('密码至少需要 8 位');sessionStorage.setItem('st_session_password',password);socket.emit('create_account',{name,password});};
+document.getElementById('loginAccount').onclick=()=>{const id=document.getElementById('accountIdInput').value.trim();if(!id)return gateError('请输入账号 ID');if(!socket||!socket.connected)return gateError('实时服务器未连接，请稍后重试');const password=document.getElementById('loginPassword').value;if(!password)return gateError('请输入密码');sessionStorage.setItem('st_session_password',password);socket.emit('authenticate',{id,password});};
+// Add friend search/invites alongside the room list.
+const friendPanel=document.createElement('div');friendPanel.className='card';friendPanel.style.marginTop='16px';friendPanel.innerHTML='<h2>好友与邀请</h2><p class="sub">通过唯一 ID 或昵称搜索在线用户，并邀请好友进入当前自习室。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="friendQuery" placeholder="输入好友 ID 或昵称" style="flex:1;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:10px"><button id="friendSearch">搜索好友</button><button class="secondary" id="inviteFriend">邀请进入当前房间</button></div><div id="friendResult" style="font-size:13px;color:var(--muted);margin-top:10px"></div><div id="onlineRoster" style="font-size:12px;color:var(--muted);margin-top:8px"></div>';
+document.getElementById('rooms-section').appendChild(friendPanel);
+document.getElementById('friendSearch').onclick=()=>{const q=document.getElementById('friendQuery').value.trim();if(!q)return toast('请输入 ID 或昵称');if(socket&&socket.connected)socket.emit('search_user',{query:q});else toast('实时服务器未连接');};
+document.getElementById('inviteFriend').onclick=()=>{const uid=document.getElementById('friendResult').dataset.uid;if(!uid)return toast('请先搜索一位好友');if(!currentRoom)return toast('请先进入一个自习室');if(socket&&socket.connected)socket.emit('invite_user',{userId:uid,roomId:String(currentRoom.id)});else toast('实时服务器未连接');};
+if(socket)socket.on('invite_sent',d=>toast(d.message||'邀请已发送'));
+if(socket)socket.on('online_users',list=>{document.getElementById('onlineRoster').textContent='当前网站在线：'+(list||[]).map(x=>x.name).slice(0,12).join('、')+((list||[]).length>12?'…':'');});
+// Presence server is authoritative; publish room creation and keep each member's identity.
+const priorCreate=document.getElementById('createRoom').onclick;
+document.getElementById('createRoom').onclick=()=>{const before=rooms.length;priorCreate();if(rooms.length>before&&socket&&socket.connected){const r=rooms[0];socket.emit('create_room',{room:r});}};
+const oldJoinForPresence=joinRoom;
+joinRoom=function(id){oldJoinForPresence(id);moveFocusPanelIntoRoom();if(socket&&socket.connected&&currentRoom){socket.emit('join_room',{roomId:String(currentRoom.id),roomName:currentRoom.name,roomCode:roomCode(currentRoom),name:myDisplayName,status:myStatus});socket.emit('room_focus_progress',{seconds:roomFocusSeconds});}};
+// Re-send presence after reconnect and room transitions without duplicate fabricated member lists.
+if(socket){socket.on('connect',()=>{if(currentRoom){socket.emit('join_room',{roomId:String(currentRoom.id),roomName:currentRoom.name,roomCode:roomCode(currentRoom),name:myDisplayName,status:myStatus});socket.emit('room_focus_progress',{seconds:roomFocusSeconds});}});socket.on('room_counts',d=>{if(d){liveCounts=Object.assign({},d);roomCountsReady=true;}renderRooms();});}
+// Break reminder after 50 minutes of continuous focus.
+let continuousFocusSeconds=0,breakReminderShown=false;
+const previousTick=tick;
+tick=function(){if(mode==='focus'&&running){continuousFocusSeconds++;if(continuousFocusSeconds>=3000&&!breakReminderShown){breakReminderShown=true;toast('已连续学习 50 分钟，起来休息一下吧 ☕');}}previousTick();if(mode==='break'){continuousFocusSeconds=0;breakReminderShown=false;}};
+const mealIdeas={all:['番茄鸡蛋面','照烧鸡腿饭','牛肉粉','咖喱饭','馄饨','三明治和热汤'],light:['清蒸鱼配蔬菜','鸡丝粥','菌菇汤面','豆腐蔬菜碗'],quick:['饭团和豆浆','鸡蛋三明治','便当','酸奶水果燕麦'],warm:['番茄牛腩汤','热汤馄饨','砂锅粥','咖喱饭'],vegetarian:['菌菇盖饭','素三鲜水饺','豆腐蔬菜碗','番茄鸡蛋面']};
+const mealSuggestButton=document.getElementById('mealSuggest');if(mealSuggestButton)mealSuggestButton.onclick=()=>{const preference=document.getElementById('mealPreference'),a=mealIdeas[preference?preference.value:'all']||mealIdeas.all;document.getElementById('mealResult').textContent='🥣 '+a[Math.floor(Math.random()*a.length)];};
+document.getElementById('skipAccount').onclick=()=>{gate.style.display='none';setAppMode('offline');toast('已跳过注册，离线记录会保存在本设备');};
+function setAppMode(next){appMode=next;localStorage.setItem('st_mode',next);document.getElementById('modeToggle').textContent=next==='online'?'🔌 联机中':'📴 离线模式';if(next==='online'){if(!socket){toast('当前页面没有联机服务，请从网站服务器地址打开');appMode='offline';localStorage.setItem('st_mode','offline');document.getElementById('modeToggle').textContent='📴 离线模式';return;}socket.connect();if(!myUser){gate.style.display='grid';gateError('联机需要连接后登录或创建账号；离线学习无需账号。');}}else{if(socket&&socket.connected)socket.disconnect();gate.style.display='none';}renderRooms();}
+document.getElementById('modeToggle').onclick=()=>setAppMode(appMode==='online'?'offline':'online');
+if(appMode==='online'&&socket){socket.connect();if(!localStorage.getItem('st_user_id'))gate.style.display='grid';}
+else{appMode='offline';document.getElementById('modeToggle').textContent='📴 离线模式';}
+
+// Room entry: capture goal/time, prepare a schedule, then enter the selected room.
+let pendingRoomId=null,pendingPlan=null;
+const entryGate=document.getElementById('roomEntryGate');
+const enterRoomDirectly=joinRoom;
+joinRoom=function(id){
+ const room=rooms.find(r=>String(r.id)===String(id));if(!room)return toast('没有找到这个自习室');
+ pendingRoomId=id;pendingPlan=null;document.getElementById('entryRoomTitle').textContent='进入「'+room.name+'」';
+ document.getElementById('entryPlan').style.display='none';document.getElementById('confirmRoomEntry').style.display='none';entryGate.style.display='grid';
+};
+document.getElementById('cancelRoomEntry').onclick=()=>{entryGate.style.display='none';pendingRoomId=null;};
+function showPlan(plan,source){
+ pendingPlan=plan;const box=document.getElementById('entryPlan');
+ box.innerHTML='<b>时间表（共 '+plan.reduce((n,x)=>n+Number(x.minutes||0),0)+' 分钟）</b>'+plan.map((x,i)=>`<div class="plan-item ${x.kind==='break'?'break':''}"><b>${i+1}. ${esc(x.title)}</b><span style="float:right">${Number(x.minutes)} 分钟</span></div>`).join('');
+ box.style.display='block';document.getElementById('confirmRoomEntry').style.display='inline-block';
+ document.getElementById('planSourceHint').textContent=source==='ai'?'AI 已根据目标生成时间表。':(socket&&socket.connected?'未配置 AI 密钥，已使用本地番茄钟规划。':'服务器离线，已使用本地番茄钟规划。');
+}
+document.getElementById('makePlan').onclick=()=>{
+ const goal=document.getElementById('entryGoal').value.trim(),minutes=Number(document.getElementById('entryMinutes').value);
+ if(goal.length<2)return toast('先写下本轮学习目标');
+ if(socket&&socket.connected){document.getElementById('makePlan').disabled=true;socket.emit('request_plan',{goal,minutes,focusMinutes:focusDuration,restMinutes:restDuration,roomId:String(pendingRoomId)});}else showPlan(localPlanForUser(goal,minutes),'local');
+};
+if(socket){socket.on('study_plan',d=>{document.getElementById('makePlan').disabled=false;if(String(d.roomId)!==String(pendingRoomId))return;showPlan(d.schedule||[],d.source);});socket.on('plan_error',d=>{document.getElementById('makePlan').disabled=false;toast(d.message||'时间表生成失败');});}
+document.getElementById('confirmRoomEntry').onclick=()=>{
+ if(pendingRoomId===null||!pendingPlan)return;
+ const goal=document.getElementById('entryGoal').value.trim(),plan=pendingPlan;
+ entryGate.style.display='none';enterRoomDirectly(pendingRoomId);
+ document.getElementById('roomPlanCard').style.display='block';
+ document.getElementById('roomPlanText').innerHTML='<div style="font-size:13px;color:#52627b;margin-bottom:7px">目标：'+esc(goal)+'</div>'+plan.map((x,i)=>`<div class="plan-item ${x.kind==='break'?'break':''}">${i+1}. ${esc(x.title)} · ${Number(x.minutes)} 分钟</div>`).join('');
+ pendingRoomId=null;
+};
+// Community feed and the two server-ranked leaderboards.
+function renderCommunity(posts){const box=document.getElementById('communityFeed');if(!posts||!posts.length){box.innerHTML='<div class="sub" style="padding:15px">社区刚刚开始，发布一个目标或问题，认识一起学习的人吧。</div>';return;}
+ const labels={buddy:'找搭子',goal:'学习目标',question:'求助答疑'};
+ box.innerHTML=posts.map(p=>`<article class="community-post"><div style="display:flex;justify-content:space-between;gap:10px"><h3>${esc(p.title)}</h3><span class="community-tag">${labels[p.type]||'社区动态'}</span></div><small style="color:var(--muted)">${esc(p.authorName||'学习伙伴')} · ID ${esc(p.authorId||'')} · ${new Date(p.createdAt).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small><p>${esc(p.body)}</p>${p.type==='question'?`<div class="community-answer"><b>${(p.answers||[]).length} 条回答</b>${(p.answers||[]).map(a=>`<div style="margin-top:7px"><b>${esc(a.authorName)}：</b>${esc(a.body)}</div>`).join('')}<div style="display:flex;gap:7px;margin-top:9px"><input id="answer-${p.id}" placeholder="写下你的解答" maxlength="500" style="min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:8px"><button class="secondary" onclick="answerCommunity('${p.id}')">回答</button></div></div>`:''}</article>`).join('');}
+window.answerCommunity=function(id){const input=document.getElementById('answer-'+id),body=input&&input.value.trim();if(!body)return toast('先写下你的回答');if(socket&&socket.connected)socket.emit('community_answer',{postId:id,body});else{const posts=JSON.parse(localStorage.getItem('st_local_posts')||'[]'),p=posts.find(x=>x.id===id);if(!p)return toast('离线模式只能回答本机发布的问题');p.answers.push({authorName:myDisplayName,body});localStorage.setItem('st_local_posts',JSON.stringify(posts));renderCommunity(posts);toast('回答已保存在本设备');}};
+document.getElementById('communitySubmit').onclick=()=>{const type=document.getElementById('communityType').value,title=document.getElementById('communityTitle').value.trim(),body=document.getElementById('communityBody').value.trim();if(title.length<2||body.length<2)return toast('标题和内容都至少写 2 个字');if(!socket||!socket.connected){const posts=JSON.parse(localStorage.getItem('st_local_posts')||'[]');posts.unshift({id:'local-'+Date.now(),type,title,body,authorId:'guest',authorName:myDisplayName,createdAt:new Date().toISOString(),answers:[]});localStorage.setItem('st_local_posts',JSON.stringify(posts.slice(0,100)));renderCommunity(posts);toast('已保存到本设备的离线社区');}else socket.emit('community_post',{type,title,body});document.getElementById('communityTitle').value='';document.getElementById('communityBody').value='';};
+if(socket){socket.on('community_list',renderCommunity);socket.on('community_error',d=>toast(d.message||'社区操作失败'));socket.on('leaderboards',d=>{
+ const render=(list,unit)=>list&&list.length?list.map((u,i)=>`<div class="leader-row"><span><b>${i<3?['🥇','🥈','🥉'][i]:(i+1)}</b>　${esc(u.name)}</span><strong>${Number(u.score)||0} ${unit}</strong></div>`).join(''):'<div class="sub">还没有上榜记录，开始自习或帮助他人吧。</div>';
+ document.getElementById('studyLeaders').innerHTML=render(d.study,'分钟');document.getElementById('helpLeaders').innerHTML=render(d.help,'次');
+ });}
+// Report one minute of active focus at a time for the community study leaderboard.
+const tickBeforeLeaderboard=tick;
+tick=function(){const wasFocus=mode==='focus'&&running;const report=wasFocus&&socket&&socket.connected&&focusSeconds>0&&focusSeconds%60===59;tickBeforeLeaderboard();if(wasFocus&&(!socket||!socket.connected)){const pending=Number(localStorage.getItem('st_pending_focus_seconds')||0);localStorage.setItem('st_pending_focus_seconds',String(pending+1));}if(report)socket.emit('focus_time',{seconds:60});};
+const tickBeforeRoomProgress=tick;
+tick=function(){const roomFocused=Boolean(currentRoom)&&mode==='focus'&&running&&remaining>0;tickBeforeRoomProgress();if(!roomFocused)return;roomFocusSeconds++;localStorage.setItem(roomFocusKey(currentRoom.id),String(roomFocusSeconds));document.getElementById('myFocus').textContent=formatStudyElapsed(roomFocusSeconds);if(socket&&socket.connected&&roomFocusSeconds%5===0)socket.emit('room_focus_progress',{seconds:roomFocusSeconds});};
+function localPlanForUser(goal,minutes){const rows=[];let left=minutes,round=1;while(left>0){const f=Math.min(focusDuration,left);rows.push({title:`第 ${round} 轮：完成「${goal}」的一个具体步骤`,minutes:f,kind:'focus'});left-=f;if(left>0){const b=Math.min(restDuration,left);rows.push({title:'起来走动、喝水并休息眼睛',minutes:b,kind:'break'});left-=b;}round++;}return rows;}
+// Meal wheel for a post-study main meal.
+const mealPool=['红烧鸡腿饭','番茄牛腩面','咖喱鸡肉饭','三鲜水饺','麻辣烫','石锅拌饭','黄焖鸡米饭','馄饨配煎蛋','照烧鸡排饭','番茄鸡蛋面','牛肉盖饭','扬州炒饭','酸菜鱼套餐','菌菇鸡汤面','鱼香肉丝饭','青椒肉丝盖饭','虾仁蛋炒饭','排骨米饭','水煮鱼套餐','鸡丝凉面','牛肉粉丝汤','猪脚饭','寿司套餐','番茄肥牛饭','香菇滑鸡饭','葱油拌面','锅贴配粥','土豆牛腩饭','烤肉拌饭','鸡蛋灌饼配豆浆'];
+let mealChoices=[];
+const wheel=document.getElementById('mealWheel');
+let wheelBusy=false,wheelRotation=0;
+function refreshMealChoices(){if(wheelBusy)return;const shuffled=mealPool.slice().sort(()=>Math.random()-.5);mealChoices=shuffled.slice(0,8);wheel.querySelectorAll('.wheel-label').forEach(label=>label.remove());mealChoices.forEach((name,i)=>{const angle=(i*45+22.5-90)*Math.PI/180,x=50+30*Math.cos(angle),y=50+30*Math.sin(angle),label=document.createElement('span');label.className='wheel-label';label.textContent=name;label.style.left=x+'%';label.style.top=y+'%';wheel.appendChild(label);});const colors=['#eaf2ff','#f7ecd8','#e6f7ef','#f9e8e8','#e8effa','#fff2d8','#e9e7ff','#e1f4f2'].sort(()=>Math.random()-.5);wheel.style.background=`conic-gradient(${mealChoices.map((_,i)=>`${colors[i]} ${i*45}deg ${(i+1)*45}deg`).join(',')})`;wheel.style.transition='none';wheel.style.transform='rotate(0deg)';wheel.offsetWidth;wheel.style.transition='transform 4.5s cubic-bezier(.12,.72,.12,1)';wheelRotation=0;document.getElementById('mealResult').textContent='菜品已更新，点击转盘试试。';}
+function spinMealWheel(){if(wheelBusy)return;wheelBusy=true;const index=Math.floor(Math.random()*mealChoices.length),turns=5+Math.floor(Math.random()*3),angle=360-((index*45+22.5)%360);wheelRotation+=turns*360+angle;wheel.style.transform=`rotate(${wheelRotation}deg)`;document.getElementById('spinMeal').disabled=true;document.getElementById('refreshMeal').disabled=true;document.getElementById('mealResult').textContent='转盘选择中…';setTimeout(()=>{document.getElementById('mealResult').textContent='今晚正餐：'+mealChoices[index]+' 🍽️';wheelBusy=false;document.getElementById('spinMeal').disabled=false;document.getElementById('refreshMeal').disabled=false;},4600);}
+refreshMealChoices();document.getElementById('refreshMeal').onclick=refreshMealChoices;document.getElementById('spinMeal').onclick=spinMealWheel;wheel.onclick=spinMealWheel;wheel.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();spinMealWheel();}};
+syncDay();renderFilters();renderRooms();renderTasks();renderStats();updateTimer();renderMemos();if(!socket||!socket.connected){const localPosts=JSON.parse(localStorage.getItem('st_local_posts')||'[]');if(localPosts.length)renderCommunity(localPosts);}
+
+// The room list has its own address; browser storage is shared with the home page.
+const roomsPage=location.pathname.toLowerCase().endsWith('/rooms.html');
+if(roomsPage){document.body.classList.add('rooms-page');document.querySelectorAll('nav button').forEach(b=>{const section=b.dataset.scroll;if(section==='home'){b.textContent='← 首页';b.onclick=()=>location.href='index.html';}else if(section==='rooms-section'){b.classList.add('active');b.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});}else b.style.display='none';});}
+else document.querySelectorAll('nav [data-scroll]').forEach(b=>{b.onclick=()=>{if(b.dataset.scroll==='rooms-section'){location.href='rooms.html';return;}document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth',block:'start'});};});
+
+</script>
+</body></html>
+
+
